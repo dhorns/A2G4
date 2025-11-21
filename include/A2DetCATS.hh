@@ -47,6 +47,10 @@ class A2DetCATS : public A2Detector
 		G4LogicalVolume* fCoreLogic;
 		G4VPhysicalVolume *fCorePhysi;
 
+		G4LogicalVolume** fAnnulusLogic;
+		G4VPhysicalVolume** fAnnulusPhysi;
+
+/*
 		G4LogicalVolume* fAnnulusPiece1Logic;
 		G4VPhysicalVolume *fAnnulusPiece1Physi;
 		G4LogicalVolume* fAnnulusPiece2Logic;
@@ -59,6 +63,7 @@ class A2DetCATS : public A2Detector
 		G4VPhysicalVolume *fAnnulusPiece5Physi;
 		G4LogicalVolume* fAnnulusPiece6Logic;
 		G4VPhysicalVolume *fAnnulusPiece6Physi;
+*/
 
 		G4LogicalVolume* fRingLogic;
 		G4VPhysicalVolume *fRingPhysi;
@@ -88,9 +93,11 @@ class A2DetCATS : public A2Detector
 		A2VisSD* fCATSCoreVisSD;
 		A2VisSD* fCATSAnnVisSD;
 		A2VisSD* fCATSShieldVisSD;
+		A2VisSD* fCATSVetoVisSD;
 		A2SD* fCATSCoreSD;
 		A2SD* fCATSAnnSD;
 		A2SD* fCATSShieldSD;
+		A2SD* fCATSVetoSD;
 	
 		G4Region* fregionCATS;
 };

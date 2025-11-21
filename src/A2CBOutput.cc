@@ -173,107 +173,142 @@ void A2CBOutput::SetBranches()
     fTree->Branch("weight",&fweight,"fweight/F",basket);
 }
 
-void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl){
+void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl)
+{
+
   G4int CollSize=HitsColl->GetNumberOfCollections();
-  //G4cout<<"Collection size "<<CollSize<<" "<<HitsColl->GetHC(0)->GetName()<<" "<<HitsColl->GetHC(1)->GetName()<<G4endl;
-  //G4cout<<"Collection size "<<CollSize<<G4endl;
   fnhits=fntaps=fnvtaps=fvhits=fntof=fnpiz=fnmwpc=0;
+  fnCATSCore = fnCATSAnn = fnCATSShield = 0;
   fetot=0;
   G4int hci=0;
-  for(G4int i=0;i<CollSize;i++){
-    //Get the ball hit info to be written to output
-    A2HitsCollection* hc;
-    //Look for the hits collections with entries 
-    while(!(hc=static_cast<A2HitsCollection*>(HitsColl->GetHC(hci++))));
-    //if(!hc)continue; //no hits in that detector
-    G4int hc_nhits=hc->entries();
-    //G4cout<<i<<" "<<hc->GetName()<< " "<<hc_nhits<<G4endl;
-    if(hc->GetName()=="A2SDHitsCBSD"||hc->GetName()=="A2SDHitsVisCBSD"){// hc: hits collection
-      fnhits=hc_nhits;
-      for(Int_t ii=0;ii<fnhits;ii++){
-	A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
-	fecryst[ii]=hit->GetEdep()/GeV;
-	ftcryst[ii]=hit->GetTime()/ns;
-	ficryst[ii]=hit->GetID();
-	fpcryst[ii]=hit->GetParticle();
-	fetot+=fecryst[ii];
-      }
-    }
-    if(hc->GetName()=="A2SDHitsTAPSSD"||hc->GetName()=="A2SDHitsTAPSVisSD"){
-      fntaps=hc_nhits;
-      for(Int_t ii=0;ii<fntaps;ii++){
-	A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
-	fectapsl[ii]=hit->GetEdep()/GeV;
-	fictaps[ii]=hit->GetID();
-	ftctaps[ii]=hit->GetTime()/ns;
-	fpctaps[ii]=hit->GetParticle();
-	//fetot+=fectapsl[i];//***TEMP!!!!
-      }
-    }
-    if(hc->GetName()=="A2SDHitsTAPSVSD"||hc->GetName()=="A2SDHitsTAPSVVisSD"){
-      fnvtaps=hc_nhits;
-      for(Int_t ii=0;ii<fnvtaps;ii++){
-	A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
-	fevtaps[ii]=hit->GetEdep()/GeV;
-	fivtaps[ii]=hit->GetID();
-	fpvtaps[ii]=hit->GetParticle();
-      }
-    }
-    if(hc->GetName()=="A2SDHitsPIDSD"){
-      fvhits=hc_nhits;
-      for(Int_t ii=0;ii<fvhits;ii++){
-	A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
-	feveto[ii]=hit->GetEdep()/GeV;
-	ftveto[ii]=hit->GetTime()/ns;
-	fiveto[ii]=hit->GetID();
-	fpveto[ii]=hit->GetParticle();
-      }
-    }
-    if(hc->GetName().contains("A2MWPCSD")){
-      // fnmwpc=hc_nhits;
-      for(Int_t ii=0;ii<hc_nhits;ii++){
-	A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
-	fimwpc[fnmwpc+ii]   = hit->GetID();
-	fmposx[fnmwpc+ii] = (Float_t)hit->GetPos().getX();
-	fmposy[fnmwpc+ii] = (Float_t)hit->GetPos().getY();
-	fmposz[fnmwpc+ii] = (Float_t)hit->GetPos().getZ();
-	femwpc[fnmwpc+ii] = (Float_t)hit->GetEdep()/GeV;
-	//	G4cout<<fnmwpc+i<<" "<<fimwpc[fnmwpc+i]<<" "<<fmpos[fnmwpc+i][0]<<" "<<fmpos[fnmwpc+i][1]<<" "<<fmpos[fnmwpc+i][2]<<G4endl;
-      }
-      fnmwpc+=hc_nhits;
-    }
-    if(hc->GetName()=="A2SDHitsTOFSD"){
-      fntof=hc_nhits;
-      for(Int_t ii=0;ii<fntof;ii++){
-	A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
-	ftofe[ii]=hit->GetEdep()/GeV;
-	ftoft[ii]=hit->GetTime()/ns;
-	ftofx[ii]=hit->GetPos().x()/cm;
-	ftofy[ii]=hit->GetPos().y()/cm;
-	ftofz[ii]=hit->GetPos().z()/cm;
-	ftofi[ii]=hit->GetID();
-      }
-    }
-    if(hc->GetName()=="A2SDHitsPizzaSD" || hc->GetName()=="A2SDHitsPizzaVisSD"){
-      fnpiz=hc_nhits;
-      for(Int_t ii=0;ii<fnpiz;ii++){
-	A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
-	fepiz[ii]=hit->GetEdep()/GeV;
-	ftpiz[ii]=hit->GetTime()/ns;
-	fipiz[ii]=hit->GetID();
-      }
-    }
+  for(G4int i=0;i<CollSize;i++)
+  {
+
+		//Get the ball hit info to be written to output
+		A2HitsCollection* hc;
+
+		//Look for the hits collections with entries 
+		while(!(hc=static_cast<A2HitsCollection*>(HitsColl->GetHC(hci++))));
+
+		//if(!hc)continue; //no hits in that detector
+		G4int hc_nhits=hc->entries();
+		G4cout<<i<<" "<<hc->GetName()<< " "<<hc_nhits<<G4endl;
+
+		// CB
+		if(hc->GetName()=="A2SDHitsCBSD"||hc->GetName()=="A2SDHitsVisCBSD")
+		{// hc: hits collection
+
+			fnhits=hc_nhits;
+			for(Int_t ii=0;ii<fnhits;ii++)
+			{
+				A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
+				fecryst[ii]=hit->GetEdep()/GeV;
+				ftcryst[ii]=hit->GetTime()/ns;
+				ficryst[ii]=hit->GetID();
+				fpcryst[ii]=hit->GetParticle();
+				fetot+=fecryst[ii];
+			}
+		}
+
+		// TAPS
+		if(hc->GetName()=="A2SDHitsTAPSSD"||hc->GetName()=="A2SDHitsTAPSVisSD")
+		{
+			fntaps=hc_nhits;
+			for(Int_t ii=0;ii<fntaps;ii++)
+			{
+				A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
+				fectapsl[ii]=hit->GetEdep()/GeV;
+				fictaps[ii]=hit->GetID();
+				ftctaps[ii]=hit->GetTime()/ns;
+				fpctaps[ii]=hit->GetParticle();
+				//fetot+=fectapsl[i];//***TEMP!!!!
+			}
+		}
+
+		// TAPS Veto
+		if(hc->GetName()=="A2SDHitsTAPSVSD"||hc->GetName()=="A2SDHitsTAPSVVisSD")
+		{
+			fnvtaps=hc_nhits;
+			for(Int_t ii=0;ii<fnvtaps;ii++)
+			{
+				A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
+				fevtaps[ii]=hit->GetEdep()/GeV;
+				fivtaps[ii]=hit->GetID();
+				fpvtaps[ii]=hit->GetParticle();
+			}
+		}
+
+		// PID
+		if(hc->GetName()=="A2SDHitsPIDSD")
+		{
+			fvhits=hc_nhits;
+			for(Int_t ii=0;ii<fvhits;ii++)
+			{
+				A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
+				feveto[ii]=hit->GetEdep()/GeV;
+				ftveto[ii]=hit->GetTime()/ns;
+				fiveto[ii]=hit->GetID();
+				fpveto[ii]=hit->GetParticle();
+			}
+		}
+
+		// MWPC
+		if(hc->GetName().contains("A2MWPCSD"))
+		{
+	      // fnmwpc=hc_nhits;
+			for(Int_t ii=0;ii<hc_nhits;ii++)
+			{
+				A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
+				fimwpc[fnmwpc+ii]   = hit->GetID();
+				fmposx[fnmwpc+ii] = (Float_t)hit->GetPos().getX();
+				fmposy[fnmwpc+ii] = (Float_t)hit->GetPos().getY();
+				fmposz[fnmwpc+ii] = (Float_t)hit->GetPos().getZ();
+				femwpc[fnmwpc+ii] = (Float_t)hit->GetEdep()/GeV;
+			}
+			fnmwpc+=hc_nhits;
+		}
+
+		// TOF
+		if(hc->GetName()=="A2SDHitsTOFSD")
+		{
+			fntof=hc_nhits;
+			for(Int_t ii=0;ii<fntof;ii++)
+			{
+				A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
+				ftofe[ii]=hit->GetEdep()/GeV;
+				ftoft[ii]=hit->GetTime()/ns;
+				ftofx[ii]=hit->GetPos().x()/cm;
+				ftofy[ii]=hit->GetPos().y()/cm;
+				ftofz[ii]=hit->GetPos().z()/cm;
+				ftofi[ii]=hit->GetID();
+			}
+		}
+
+		// Pizza
+		if(hc->GetName()=="A2SDHitsPizzaSD" || hc->GetName()=="A2SDHitsPizzaVisSD")
+		{
+			fnpiz=hc_nhits;
+			for(Int_t ii=0;ii<fnpiz;ii++)
+			{
+				A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
+				fepiz[ii]=hit->GetEdep()/GeV;
+				ftpiz[ii]=hit->GetTime()/ns;
+				fipiz[ii]=hit->GetID();
+			}
+		}
 
 		// CATS Core
 		if ( hc->GetName() == "A2SDHitsCATSCoreSD" || hc->GetName() == "A2SDHitsCATSCoreVisSD")
 		{
 	      fnCATSCore = hc_nhits;
+			std::cout << " fnCATSCore = ";
+			std::cout << fnCATSCore << std::endl;
 	      for ( Int_t ii = 0; ii < fnCATSCore; ii++)
 			{
-	        A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
-	        feCATSCore[ii]=hit->GetEdep()/GeV;
-	        ftCATSCore[ii]=hit->GetTime()/ns;
-	        fiCATSCore[ii]=hit->GetID();
+				A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
+				feCATSCore[ii]=hit->GetEdep()/GeV;
+				ftCATSCore[ii]=hit->GetTime()/ns;
+				fiCATSCore[ii]=hit->GetID();
 			}
 		}
 
@@ -281,12 +316,14 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl){
 		if ( hc->GetName() == "A2SDHitsCATSAnnSD" || hc->GetName() == "A2SDHitsCATSAnnVisSD")
 		{
 	      fnCATSAnn = hc_nhits;
+			std::cout << " fnCATSAnn = ";
+			std::cout << fnCATSAnn << std::endl;
 	      for ( Int_t ii = 0; ii < fnCATSAnn; ii++)
 			{
-	        A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
-	        feCATSAnn[ii]=hit->GetEdep()/GeV;
-	        ftCATSAnn[ii]=hit->GetTime()/ns;
-	        fiCATSAnn[ii]=hit->GetID();
+				A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
+				feCATSAnn[ii]=hit->GetEdep()/GeV;
+				ftCATSAnn[ii]=hit->GetTime()/ns;
+				fiCATSAnn[ii]=hit->GetID();
 			}
 		}
 
@@ -294,12 +331,14 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl){
 		if ( hc->GetName() == "A2SDHitsCATSShieldSD" || hc->GetName() == "A2SDHitsCATSShieldVisSD")
 		{
 	      fnCATSShield = hc_nhits;
+			std::cout << " fnCATSShield = ";
+			std::cout << fnCATSShield << std::endl;
 	      for ( Int_t ii = 0; ii < fnCATSShield; ii++)
 			{
-	        A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
-	        feCATSShield[ii]=hit->GetEdep()/GeV;
-	        ftCATSShield[ii]=hit->GetTime()/ns;
-	        fiCATSShield[ii]=hit->GetID();
+				A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
+				feCATSShield[ii]=hit->GetEdep()/GeV;
+				ftCATSShield[ii]=hit->GetTime()/ns;
+				fiCATSShield[ii]=hit->GetID();
 			}
 		}
 	}

@@ -167,6 +167,12 @@ void A2CBOutput::SetBranches()
 		fTree->Branch( "eCATSShield", feCATSShield, "feCATSShield[fnCATSShield]/F", basket);
 		fTree->Branch( "tCATSShield", ftCATSShield, "ftCATSShield[fnCATSShield]/F", basket);
 
+		// Veto
+		fTree->Branch( "nCATSVeto", &fnCATSVeto, "fnCATSVeto/I", basket);
+		fTree->Branch( "iCATSVeto", fiCATSVeto, "fiCATSVeto[fnCATSVeto]/I", basket);
+		fTree->Branch( "eCATSVeto", feCATSVeto, "feCATSVeto[fnCATSVeto]/F", basket);
+		fTree->Branch( "tCATSVeto", ftCATSVeto, "ftCATSVeto[fnCATSVeto]/F", basket);
+
 	}
 
   if (fIsGiBUU)
@@ -178,7 +184,7 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl)
 
   G4int CollSize=HitsColl->GetNumberOfCollections();
   fnhits=fntaps=fnvtaps=fvhits=fntof=fnpiz=fnmwpc=0;
-  fnCATSCore = fnCATSAnn = fnCATSShield = 0;
+  fnCATSCore = fnCATSAnn = fnCATSShield = fnCATSVeto= 0;
   fetot=0;
   G4int hci=0;
   for(G4int i=0;i<CollSize;i++)
@@ -301,14 +307,16 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl)
 		if ( hc->GetName() == "A2SDHitsCATSCoreSD" || hc->GetName() == "A2SDHitsCATSCoreVisSD")
 		{
 	      fnCATSCore = hc_nhits;
-			std::cout << " fnCATSCore = ";
-			std::cout << fnCATSCore << std::endl;
 	      for ( Int_t ii = 0; ii < fnCATSCore; ii++)
 			{
 				A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
 				feCATSCore[ii]=hit->GetEdep()/GeV;
 				ftCATSCore[ii]=hit->GetTime()/ns;
 				fiCATSCore[ii]=hit->GetID();
+				G4cout << " fnCATSCore = " << fnCATSCore;
+				G4cout << " ii = " << ii;
+				G4cout << " hit = " << hit->GetID();
+				G4cout << G4endl;
 			}
 		}
 
@@ -316,14 +324,16 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl)
 		if ( hc->GetName() == "A2SDHitsCATSAnnSD" || hc->GetName() == "A2SDHitsCATSAnnVisSD")
 		{
 	      fnCATSAnn = hc_nhits;
-			std::cout << " fnCATSAnn = ";
-			std::cout << fnCATSAnn << std::endl;
 	      for ( Int_t ii = 0; ii < fnCATSAnn; ii++)
 			{
 				A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
 				feCATSAnn[ii]=hit->GetEdep()/GeV;
 				ftCATSAnn[ii]=hit->GetTime()/ns;
 				fiCATSAnn[ii]=hit->GetID();
+				G4cout << " fnCATSAnn = " << fnCATSAnn;
+				G4cout << " ii = " << ii;
+				G4cout << " hit = " << hit->GetID();
+				G4cout << G4endl;
 			}
 		}
 
@@ -331,38 +341,60 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl)
 		if ( hc->GetName() == "A2SDHitsCATSShieldSD" || hc->GetName() == "A2SDHitsCATSShieldVisSD")
 		{
 	      fnCATSShield = hc_nhits;
-			std::cout << " fnCATSShield = ";
-			std::cout << fnCATSShield << std::endl;
 	      for ( Int_t ii = 0; ii < fnCATSShield; ii++)
 			{
 				A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
 				feCATSShield[ii]=hit->GetEdep()/GeV;
 				ftCATSShield[ii]=hit->GetTime()/ns;
 				fiCATSShield[ii]=hit->GetID();
+				G4cout << " fnCATSShield = " << fnCATSShield;
+				G4cout << " ii = " << ii;
+				G4cout << " hit = " << hit->GetID();
+				G4cout << G4endl;
+			}
+		}
+
+		// CATS Veto
+		if ( hc->GetName() == "A2SDHitsCATSVetoSD" || hc->GetName() == "A2SDHitsCATSVetoVisSD")
+		{
+	      fnCATSVeto = hc_nhits;
+	      for ( Int_t ii = 0; ii < fnCATSVeto; ii++)
+			{
+				A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
+				feCATSVeto[ii]=hit->GetEdep()/GeV;
+				ftCATSVeto[ii]=hit->GetTime()/ns;
+				fiCATSVeto[ii]=hit->GetID();
+				G4cout << " fnCATSVeto = " << fnCATSVeto;
+				G4cout << " ii = " << ii;
+				G4cout << " hit = " << hit->GetID();
+				G4cout << G4endl;
 			}
 		}
 	}
 }
-void A2CBOutput::WriteGenInput(){
-  //Note fvertex is already the pointer to fPGA::fGenPosition 
-  //Get the generated input info to be written to output 
-  TVector3 vec=fBeamLorentzVec->Vect().Unit();
-  fbeam[0]=vec.X();
-  fbeam[1]=vec.Y();
-  fbeam[2]=vec.Z();
-  fbeam[3]=fBeamLorentzVec->Rho()/GeV;
-  fbeam[4]=fBeamLorentzVec->E()/GeV;
+void A2CBOutput::WriteGenInput()
+{
 
-  //Loop over the input particles and write their real kinematics
-  fnpart=fPGA->GetNGenParticles();
-  for(Int_t i=0;i<fnpart;i++){
-    vec=fGenLorentzVec[i]->Vect().Unit();
-    fdircos[i][0]=static_cast<Float_t>(vec.X());
-    fdircos[i][1]=static_cast<Float_t>(vec.Y());
-    fdircos[i][2]=static_cast<Float_t>(vec.Z());
-    felab[i]=fGenLorentzVec[i]->E()/GeV;
-    fplab[i]=fGenLorentzVec[i]->Rho()/GeV;
-    fidpart[i]=fGenPartType[i];
-  }
-  if (fIsGiBUU) fweight = fPGA->GetFileGen()->GetWeight();
+	// Note fvertex is already the pointer to fPGA::fGenPosition 
+	// Get the generated input info to be written to output 
+	TVector3 vec=fBeamLorentzVec->Vect().Unit();
+	fbeam[0]=vec.X();
+	fbeam[1]=vec.Y();
+	fbeam[2]=vec.Z();
+	fbeam[3]=fBeamLorentzVec->Rho()/GeV;
+	fbeam[4]=fBeamLorentzVec->E()/GeV;
+
+	// Loop over the input particles and write their real kinematics
+	fnpart=fPGA->GetNGenParticles();
+	for ( Int_t i = 0; i < fnpart; i++)
+	{
+		vec=fGenLorentzVec[i]->Vect().Unit();
+		fdircos[i][0]=static_cast<Float_t>(vec.X());
+		fdircos[i][1]=static_cast<Float_t>(vec.Y());
+		fdircos[i][2]=static_cast<Float_t>(vec.Z());
+		felab[i]=fGenLorentzVec[i]->E()/GeV;
+		fplab[i]=fGenLorentzVec[i]->Rho()/GeV;
+		fidpart[i]=fGenPartType[i];
+	}
+	if (fIsGiBUU) fweight = fPGA->GetFileGen()->GetWeight();
 }

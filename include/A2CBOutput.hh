@@ -88,22 +88,28 @@ protected:
   Float_t ftpiz[MAXSIZE_PIZZA]; //hit sector time
 
   // CATS Core
-  Int_t fnCATSCore;							//Number of hits in CATS detector
+  Int_t fnCATSCore;							//Number of hits in CATS Core
   Int_t fiCATSCore[MAXSIZE_CATS];		//hit sector indexes
   Float_t feCATSCore[MAXSIZE_CATS];		//hit sector energy deposits
   Float_t ftCATSCore[MAXSIZE_CATS];		//hit sector time
 
   // CATS Annulus
-  Int_t fnCATSAnn;							//Number of hits in CATS detector
+  Int_t fnCATSAnn;							//Number of hits in CATS Annulus
   Int_t fiCATSAnn[MAXSIZE_CATS];			//hit sector indexes
   Float_t feCATSAnn[MAXSIZE_CATS];		//hit sector energy deposits
   Float_t ftCATSAnn[MAXSIZE_CATS];		//hit sector time
 
   // CATS Shield
-  Int_t fnCATSShield;							//Number of hits in CATS detector
+  Int_t fnCATSShield;							//Number of hits in CATS Shield
   Int_t fiCATSShield[MAXSIZE_CATS];			//hit sector indexes
   Float_t feCATSShield[MAXSIZE_CATS];		//hit sector energy deposits
   Float_t ftCATSShield[MAXSIZE_CATS];		//hit sector time
+
+  // CATS Veto
+  Int_t fnCATSVeto;							//Number of hits in CATS Veto
+  Int_t fiCATSVeto[MAXSIZE_CATS];		//hit sector indexes
+  Float_t feCATSVeto[MAXSIZE_CATS];		//hit sector energy deposits
+  Float_t ftCATSVeto[MAXSIZE_CATS];		//hit sector time
 
   G4bool fIsGiBUU; // Is this a GiBUU file
   Float_t fweight; // event weight

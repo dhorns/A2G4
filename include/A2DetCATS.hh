@@ -12,7 +12,6 @@
 #include "G4NistManager.hh"
 #include "G4Material.hh"
 
-
 class G4VPhysicalVolume;
 class G4LogicalVolume;
 class G4Region;
@@ -21,74 +20,54 @@ class A2VisSD;
 
 class A2DetCATS : public A2Detector 
 {
+	protected:
+		G4bool fIsCheckOverlap;     // flag for volume overlap check
 
 	public: 
 		A2DetCATS();
 		~A2DetCATS();
 
-		virtual G4VPhysicalVolume* Construct( G4LogicalVolume *MotherLogic); 
+		virtual G4VPhysicalVolume* Construct( G4LogicalVolume* motherLogic); 
+
 		void MakeCore();
 		void MakeAnnulus();
-		void MakeRing();
 		void MakeScintillators();
-		void MakeSensitiveDetectors();
-		void MakeLeadShield();
 		void MakeVeto();
+
+		void MakeSensitiveDetectors();
+
+		void MakeRing();
+		void MakeLeadShield();
 
 	private:
 		G4NistManager* fNistManager;
 
-		//logical and physical volumes that are part of every detector class
+		// Logical and physical volumes that are part of every detector class
 		G4LogicalVolume* fMotherLogic; 
 		G4LogicalVolume* fMyLogic; 
 		G4VPhysicalVolume* fMyPhysi; 
 
-		//volumes specifically for this detector
+		// CATS Volumes
 		G4LogicalVolume* fCoreLogic;
-		G4VPhysicalVolume *fCorePhysi;
+		G4VPhysicalVolume* fCorePhysi;
 
-		G4LogicalVolume** fAnnulusLogic;
-		G4VPhysicalVolume** fAnnulusPhysi;
+		G4LogicalVolume* fAnnulusLogic;
+		G4VPhysicalVolume* fAnnulusPhysi;
 
-/*
-		G4LogicalVolume* fAnnulusPiece1Logic;
-		G4VPhysicalVolume *fAnnulusPiece1Physi;
-		G4LogicalVolume* fAnnulusPiece2Logic;
-		G4VPhysicalVolume *fAnnulusPiece2Physi;
-		G4LogicalVolume* fAnnulusPiece3Logic;
-		G4VPhysicalVolume *fAnnulusPiece3Physi;
-		G4LogicalVolume* fAnnulusPiece4Logic;
-		G4VPhysicalVolume *fAnnulusPiece4Physi;
-		G4LogicalVolume* fAnnulusPiece5Logic;
-		G4VPhysicalVolume *fAnnulusPiece5Physi;
-		G4LogicalVolume* fAnnulusPiece6Logic;
-		G4VPhysicalVolume *fAnnulusPiece6Physi;
-*/
+		G4LogicalVolume* fScintLogic;
+		G4VPhysicalVolume* fScintPhysi;
+
+		G4LogicalVolume* fVetoLogic;
+		G4VPhysicalVolume* fVetoPhysi;
 
 		G4LogicalVolume* fRingLogic;
-		G4VPhysicalVolume *fRingPhysi;
-
-		G4LogicalVolume* fScint1Logic;
-		G4VPhysicalVolume * fScint1Physi;
-		G4LogicalVolume* fScint2Logic;
-		G4VPhysicalVolume * fScint2Physi;
-		G4LogicalVolume* fScint3Logic;
-		G4VPhysicalVolume * fScint3Physi;
-		G4LogicalVolume* fScint4Logic;
-		G4VPhysicalVolume * fScint4Physi;
-		G4LogicalVolume* fScint5Logic;
-		G4VPhysicalVolume * fScint5Physi;
-		G4LogicalVolume* fScint6Logic;
-		G4VPhysicalVolume * fScint6Physi;	
+		G4VPhysicalVolume* fRingPhysi;
 
 		G4LogicalVolume* fLeadConeLogic;
 		G4VPhysicalVolume* fLeadConePhysi;	
 
 		G4LogicalVolume* fLeadBoxLogic;
-		G4VPhysicalVolume * fLeadBoxPhysi;
-
-		G4LogicalVolume *fVetoLogic;
-		G4VPhysicalVolume *fVetoPhysi;
+		G4VPhysicalVolume* fLeadBoxPhysi;
 
 		A2VisSD* fCATSCoreVisSD;
 		A2VisSD* fCATSAnnVisSD;

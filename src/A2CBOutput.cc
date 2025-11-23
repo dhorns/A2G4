@@ -161,11 +161,17 @@ void A2CBOutput::SetBranches()
 		fTree->Branch( "eCATSAnn", feCATSAnn, "feCATSAnn[fnCATSAnn]/F", basket);
 		fTree->Branch( "tCATSAnn", ftCATSAnn, "ftCATSAnn[fnCATSAnn]/F", basket);
 
-		// Shield
+		// Cosmic Shield
 		fTree->Branch( "nCATSShield", &fnCATSShield, "fnCATSShield/I", basket);
 		fTree->Branch( "iCATSShield", fiCATSShield, "fiCATSShield[fnCATSShield]/I", basket);
 		fTree->Branch( "eCATSShield", feCATSShield, "feCATSShield[fnCATSShield]/F", basket);
 		fTree->Branch( "tCATSShield", ftCATSShield, "ftCATSShield[fnCATSShield]/F", basket);
+
+		// Rear Shield
+		fTree->Branch( "nCATSRShield", &fnCATSRShield, "fnCATSRShield/I", basket);
+		fTree->Branch( "iCATSRShield", fiCATSRShield, "fiCATSRShield[fnCATSRShield]/I", basket);
+		fTree->Branch( "eCATSRShield", feCATSRShield, "feCATSRShield[fnCATSRShield]/F", basket);
+		fTree->Branch( "tCATSRShield", ftCATSRShield, "ftCATSRShield[fnCATSRShield]/F", basket);
 
 		// Veto
 		fTree->Branch( "nCATSVeto", &fnCATSVeto, "fnCATSVeto/I", basket);
@@ -184,7 +190,7 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl)
 
   G4int CollSize=HitsColl->GetNumberOfCollections();
   fnhits=fntaps=fnvtaps=fvhits=fntof=fnpiz=fnmwpc=0;
-  fnCATSCore = fnCATSAnn = fnCATSShield = fnCATSVeto= 0;
+  fnCATSCore = fnCATSAnn = fnCATSShield = fnCATSRShield = fnCATSVeto= 0;
   fetot=0;
   G4int hci=0;
   for(G4int i=0;i<CollSize;i++)
@@ -198,7 +204,7 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl)
 
 		//if(!hc)continue; //no hits in that detector
 		G4int hc_nhits=hc->entries();
-		G4cout<<i<<" "<<hc->GetName()<< " "<<hc_nhits<<G4endl;
+//		G4cout<<i<<" "<<hc->GetName()<< " "<<hc_nhits<<G4endl;
 
 		// CB
 		if(hc->GetName()=="A2SDHitsCBSD"||hc->GetName()=="A2SDHitsVisCBSD")
@@ -313,10 +319,10 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl)
 				feCATSCore[ii]=hit->GetEdep()/GeV;
 				ftCATSCore[ii]=hit->GetTime()/ns;
 				fiCATSCore[ii]=hit->GetID();
-				G4cout << " fnCATSCore = " << fnCATSCore;
-				G4cout << " ii = " << ii;
-				G4cout << " hit = " << hit->GetID();
-				G4cout << G4endl;
+//				G4cout << " fnCATSCore = " << fnCATSCore;
+//				G4cout << " ii = " << ii;
+//				G4cout << " hit = " << hit->GetID();
+//				G4cout << G4endl;
 			}
 		}
 
@@ -330,14 +336,14 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl)
 				feCATSAnn[ii]=hit->GetEdep()/GeV;
 				ftCATSAnn[ii]=hit->GetTime()/ns;
 				fiCATSAnn[ii]=hit->GetID();
-				G4cout << " fnCATSAnn = " << fnCATSAnn;
-				G4cout << " ii = " << ii;
-				G4cout << " hit = " << hit->GetID();
-				G4cout << G4endl;
+//				G4cout << " fnCATSAnn = " << fnCATSAnn;
+//				G4cout << " ii = " << ii;
+//				G4cout << " hit = " << hit->GetID();
+//				G4cout << G4endl;
 			}
 		}
 
-		// CATS Shield
+		// CATS Cosmic Shield
 		if ( hc->GetName() == "A2SDHitsCATSShieldSD" || hc->GetName() == "A2SDHitsCATSShieldVisSD")
 		{
 	      fnCATSShield = hc_nhits;
@@ -347,10 +353,27 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl)
 				feCATSShield[ii]=hit->GetEdep()/GeV;
 				ftCATSShield[ii]=hit->GetTime()/ns;
 				fiCATSShield[ii]=hit->GetID();
-				G4cout << " fnCATSShield = " << fnCATSShield;
-				G4cout << " ii = " << ii;
-				G4cout << " hit = " << hit->GetID();
-				G4cout << G4endl;
+//				G4cout << " fnCATSShield = " << fnCATSShield;
+//				G4cout << " ii = " << ii;
+//				G4cout << " hit = " << hit->GetID();
+//				G4cout << G4endl;
+			}
+		}
+
+		// CATS Rear Cosmic Shield
+		if ( hc->GetName() == "A2SDHitsCATSRShieldSD" || hc->GetName() == "A2SDHitsCATSRShieldVisSD")
+		{
+	      fnCATSRShield = hc_nhits;
+	      for ( Int_t ii = 0; ii < fnCATSRShield; ii++)
+			{
+				A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(ii));
+				feCATSRShield[ii]=hit->GetEdep()/GeV;
+				ftCATSRShield[ii]=hit->GetTime()/ns;
+				fiCATSRShield[ii]=hit->GetID();
+//				G4cout << " fnCATSRShield = " << fnCATSRShield;
+//				G4cout << " ii = " << ii;
+//				G4cout << " hit = " << hit->GetID();
+//				G4cout << G4endl;
 			}
 		}
 
@@ -364,10 +387,10 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl)
 				feCATSVeto[ii]=hit->GetEdep()/GeV;
 				ftCATSVeto[ii]=hit->GetTime()/ns;
 				fiCATSVeto[ii]=hit->GetID();
-				G4cout << " fnCATSVeto = " << fnCATSVeto;
-				G4cout << " ii = " << ii;
-				G4cout << " hit = " << hit->GetID();
-				G4cout << G4endl;
+//				G4cout << " fnCATSVeto = " << fnCATSVeto;
+//				G4cout << " ii = " << ii;
+//				G4cout << " hit = " << hit->GetID();
+//				G4cout << G4endl;
 			}
 		}
 	}

@@ -88,28 +88,34 @@ protected:
   Float_t ftpiz[MAXSIZE_PIZZA]; //hit sector time
 
   // CATS Core
-  Int_t fnCATSCore;							//Number of hits in CATS Core
-  Int_t fiCATSCore[MAXSIZE_CATS];		//hit sector indexes
-  Float_t feCATSCore[MAXSIZE_CATS];		//hit sector energy deposits
-  Float_t ftCATSCore[MAXSIZE_CATS];		//hit sector time
+  Int_t fnCATSCore;			//Number of hits in CATS Core
+  Int_t fiCATSCore[7];		//hit sector indexes
+  Float_t feCATSCore[7];	//hit sector energy deposits
+  Float_t ftCATSCore[7];	//hit sector time
 
   // CATS Annulus
-  Int_t fnCATSAnn;							//Number of hits in CATS Annulus
-  Int_t fiCATSAnn[MAXSIZE_CATS];			//hit sector indexes
-  Float_t feCATSAnn[MAXSIZE_CATS];		//hit sector energy deposits
-  Float_t ftCATSAnn[MAXSIZE_CATS];		//hit sector time
+  Int_t fnCATSAnn;			//Number of hits in CATS Annulus
+  Int_t fiCATSAnn[6];		//hit sector indexes
+  Float_t feCATSAnn[6];		//hit sector energy deposits
+  Float_t ftCATSAnn[6];		//hit sector time
 
-  // CATS Shield
-  Int_t fnCATSShield;							//Number of hits in CATS Shield
-  Int_t fiCATSShield[MAXSIZE_CATS];			//hit sector indexes
-  Float_t feCATSShield[MAXSIZE_CATS];		//hit sector energy deposits
-  Float_t ftCATSShield[MAXSIZE_CATS];		//hit sector time
+  // CATS Cosmic Shield
+  Int_t fnCATSShield;			//Number of hits in CATS Shield
+  Int_t fiCATSShield[5];		//hit sector indexes
+  Float_t feCATSShield[5];		//hit sector energy deposits
+  Float_t ftCATSShield[5];		//hit sector time
+
+  // CATS Rear Shield
+  Int_t fnCATSRShield;				//Number of hits in CATS Shield
+  Int_t fiCATSRShield[5];			//hit sector indexes
+  Float_t feCATSRShield[5];		//hit sector energy deposits
+  Float_t ftCATSRShield[5];		//hit sector time
 
   // CATS Veto
-  Int_t fnCATSVeto;							//Number of hits in CATS Veto
-  Int_t fiCATSVeto[MAXSIZE_CATS];		//hit sector indexes
-  Float_t feCATSVeto[MAXSIZE_CATS];		//hit sector energy deposits
-  Float_t ftCATSVeto[MAXSIZE_CATS];		//hit sector time
+  Int_t fnCATSVeto;			//Number of hits in CATS Veto
+  Int_t fiCATSVeto[5];		//hit sector indexes
+  Float_t feCATSVeto[5];	//hit sector energy deposits
+  Float_t ftCATSVeto[5];	//hit sector time
 
   G4bool fIsGiBUU; // Is this a GiBUU file
   Float_t fweight; // event weight

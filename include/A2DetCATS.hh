@@ -21,7 +21,21 @@ class A2VisSD;
 class A2DetCATS : public A2Detector 
 {
 	protected:
-		G4bool fIsCheckOverlap;     // flag for volume overlap check
+		G4bool fIsCheckOverlap;
+
+		G4Region* fregionCATS;
+
+		A2VisSD* fCATSCoreVisSD;
+		A2VisSD* fCATSAnnVisSD;
+		A2VisSD* fCATSShieldVisSD;
+		A2VisSD* fCATSRShieldVisSD;
+		A2VisSD* fCATSVetoVisSD;
+
+		A2SD* fCATSCoreSD;
+		A2SD* fCATSAnnSD;
+		A2SD* fCATSShieldSD;
+		A2SD* fCATSRShieldSD;
+		A2SD* fCATSVetoSD;
 
 	public: 
 		A2DetCATS();
@@ -31,7 +45,8 @@ class A2DetCATS : public A2Detector
 
 		void MakeCore();
 		void MakeAnnulus();
-		void MakeScintillators();
+		void MakeShield();
+		void MakeRearShield();
 		void MakeVeto();
 
 		void MakeSensitiveDetectors();
@@ -39,46 +54,6 @@ class A2DetCATS : public A2Detector
 		void MakeRing();
 		void MakeLeadShield();
 
-	private:
-		G4NistManager* fNistManager;
-
-		// Logical and physical volumes that are part of every detector class
-		G4LogicalVolume* fMotherLogic; 
-		G4LogicalVolume* fMyLogic; 
-		G4VPhysicalVolume* fMyPhysi; 
-
-		// CATS Volumes
-		G4LogicalVolume* fCoreLogic;
-		G4VPhysicalVolume* fCorePhysi;
-
-		G4LogicalVolume* fAnnulusLogic;
-		G4VPhysicalVolume* fAnnulusPhysi;
-
-		G4LogicalVolume* fScintLogic;
-		G4VPhysicalVolume* fScintPhysi;
-
-		G4LogicalVolume* fVetoLogic;
-		G4VPhysicalVolume* fVetoPhysi;
-
-		G4LogicalVolume* fRingLogic;
-		G4VPhysicalVolume* fRingPhysi;
-
-		G4LogicalVolume* fLeadConeLogic;
-		G4VPhysicalVolume* fLeadConePhysi;	
-
-		G4LogicalVolume* fLeadBoxLogic;
-		G4VPhysicalVolume* fLeadBoxPhysi;
-
-		A2VisSD* fCATSCoreVisSD;
-		A2VisSD* fCATSAnnVisSD;
-		A2VisSD* fCATSShieldVisSD;
-		A2VisSD* fCATSVetoVisSD;
-		A2SD* fCATSCoreSD;
-		A2SD* fCATSAnnSD;
-		A2SD* fCATSShieldSD;
-		A2SD* fCATSVetoSD;
-	
-		G4Region* fregionCATS;
 };
 
 #endif

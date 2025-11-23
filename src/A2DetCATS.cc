@@ -23,14 +23,11 @@
 using namespace CLHEP;
 
 // half-length of CATS
-const G4double z = 31.75*cm; // For crystal
-const G4double w = 40.75*cm; // For scintillators
+const G4double z_cryst = 31.75*cm; // For crystal
+const G4double w_scint = 40.75*cm; // For scintillators
 
-const G4int nCore = 1;
 const G4int nAnn = 6;
-const G4int nShi = 6;
-const G4int nVeto = 1;
-
+const G4int nShi = 5;
 
 // Constructor
 A2DetCATS::A2DetCATS()
@@ -46,6 +43,8 @@ A2DetCATS::A2DetCATS()
 	fCATSAnnVisSD = 0;
 	fCATSShieldSD = 0;
 	fCATSShieldVisSD = 0;
+	fCATSRShieldSD = 0;
+	fCATSRShieldVisSD = 0;
 	fCATSVetoSD = 0;
 	fCATSVetoVisSD = 0;
 
@@ -61,10 +60,12 @@ A2DetCATS::~A2DetCATS()
 	if (fCATSCoreSD) delete fCATSCoreSD;
 	if (fCATSAnnSD) delete fCATSAnnSD;
 	if (fCATSShieldSD) delete fCATSShieldSD;
+	if (fCATSRShieldSD) delete fCATSRShieldSD;
 	if (fCATSVetoSD) delete fCATSVetoSD;
 	if (fCATSCoreVisSD) delete fCATSCoreVisSD;
 	if (fCATSAnnVisSD) delete fCATSAnnVisSD;
 	if (fCATSShieldVisSD) delete fCATSShieldVisSD;
+	if (fCATSRShieldVisSD) delete fCATSRShieldVisSD;
 	if (fCATSVetoVisSD) delete fCATSVetoVisSD;
 
 }
@@ -88,10 +89,12 @@ G4VPhysicalVolume* A2DetCATS::Construct( G4LogicalVolume* motherLogic)
 
 	if ( fIsCheckOverlap) A2Utils::CheckOverlapAndAbort( fMyPhysi, "A2DetCATS::Construct()");
 
-	// Define our Construction functions
+// Construct the various parts of CATS
+
 	MakeCore();
 	MakeAnnulus();
-	MakeScintillators();
+	MakeShield();
+	MakeRearShield();
 	MakeVeto();
 	MakeRing();
 	MakeLeadShield();
@@ -104,15 +107,17 @@ G4VPhysicalVolume* A2DetCATS::Construct( G4LogicalVolume* motherLogic)
 void A2DetCATS::MakeCore()
 {
 
+// Define Core colour
 	G4VisAttributes* col1 = new G4VisAttributes( G4Colour( 0.4, 0.5, 0.1));
 	col1->SetVisibility( true);
 
-// Measurements of CATS Core. Technically two cylinders cemented together, but this is fine.
-	G4Tubs *fCore = new G4Tubs( "Core", 0*cm, 13.35*cm, z, 0.*deg, 360.*deg); //removed hole that was never meant to be there 
-	fCoreLogic = new G4LogicalVolume( fCore, fNistManager->FindOrBuildMaterial( "G4_SODIUM_IODIDE"), "CoreLogic");
+// Make the Core
+	G4Tubs *fCore = new G4Tubs( "Core", 0*cm, 13.35*cm, z_cryst, 0.*deg, 360.*deg);
+	G4LogicalVolume* fCoreLogic = new G4LogicalVolume( fCore, fNistManager->FindOrBuildMaterial( "G4_SODIUM_IODIDE"), "CoreLogic");
 	fCoreLogic->SetVisAttributes( col1);
-	fCorePhysi = new G4PVPlacement( 0, G4ThreeVector( 0, 0, 0), fCoreLogic, "CorePlacement", fMyLogic, false, 1);
+	G4VPhysicalVolume* fCorePhysi = new G4PVPlacement( 0, G4ThreeVector( 0, 0, 0), fCoreLogic, "CorePlacement", fMyLogic, false, 1);
 
+// Check for overlap
 	if ( fIsCheckOverlap) A2Utils::CheckOverlapAndAbort( fCorePhysi, "A2DetCATS::Construct()");
 
 // Make Sensitive
@@ -122,6 +127,7 @@ void A2DetCATS::MakeCore()
 		if ( !fCATSCoreVisSD) fCATSCoreVisSD = new A2VisSD( "CATSCoreVisSD", 1);
 		SDman->AddNewDetector( fCATSCoreVisSD );
 		fCoreLogic->SetSensitiveDetector( fCATSCoreVisSD);
+		fregionCATS->AddRootLogicalVolume( fCoreLogic);
 	}
 	else
 	{
@@ -129,30 +135,42 @@ void A2DetCATS::MakeCore()
 		if ( !fCATSCoreVisSD) fCATSCoreVisSD = new A2VisSD( "CATSCoreVisSD", 1);
 		SDman->AddNewDetector( fCATSCoreVisSD );
 		fCoreLogic->SetSensitiveDetector( fCATSCoreVisSD);
+		fregionCATS->AddRootLogicalVolume( fCoreLogic);
 	}
 
 }
 
-// Function to make NaI annulus around the core
+//
+// Annulus
+//
 void A2DetCATS::MakeAnnulus()
 {
 
+//	Define Annulus colours
 	G4VisAttributes* col2 = new G4VisAttributes( G4Colour( 0.0, 1.0, 1.0));
 	col2->SetVisibility( true);
 	G4VisAttributes* col3 = new G4VisAttributes( G4Colour( 1.0, 0.0, 0.0));
 	col3->SetVisibility( true);
 
-	for ( G4int i = 0; i < nAnn; i++)
+	G4Tubs *fAnnulus = new G4Tubs( "Annulus", 13.35*cm, 24.15*cm, z_cryst, 30.*deg, 60.*deg);
+	G4LogicalVolume* fAnnulusLogic = new G4LogicalVolume( fAnnulus, fNistManager->FindOrBuildMaterial( "G4_SODIUM_IODIDE"), "AnnulusLogic");
+
+// Make the 6 Annulus segments
+	for ( G4int ii = 0; ii < 6; ii++)
 	{
 
-		G4Tubs *fAnnulus = new G4Tubs( "Annulus", 13.35*cm, 24.15*cm, z, (60.*i)*deg, 60.*deg);
+		G4RotationMatrix* rotate = new G4RotationMatrix();
+		G4double rot_ang;
 
-		fAnnulusLogic = new G4LogicalVolume( fAnnulus, fNistManager->FindOrBuildMaterial( "G4_SODIUM_IODIDE"), "AnnulusLogic");
+		rot_ang = 30.*deg*(1. + 2.*ii);
+
+		rotate->rotateZ( rot_ang);
+
 		fAnnulusLogic->SetVisAttributes( col2);
+		G4VPhysicalVolume* fAnnulusPhysi = new G4PVPlacement( rotate, G4ThreeVector( 0, 0, 0), fAnnulusLogic,
+				TString::Format( "AnnulusPlacement%d", ii+1).Data(), fMyLogic, false, ii+1);
 
-		fAnnulusPhysi = new G4PVPlacement( 0, G4ThreeVector( 0, 0, 0), fAnnulusLogic,
-				TString::Format( "AnnulusPlacement%d", i+1).Data(), fMyLogic, false, i+1);
-
+		// Check for overlap
 		if ( fIsCheckOverlap) A2Utils::CheckOverlapAndAbort( fAnnulusPhysi, "A2DetCATS::Construct()");
 
 	}
@@ -180,34 +198,37 @@ void A2DetCATS::MakeAnnulus()
 	}
 }
 
-// Scintillators to veto cosmics rays
-void A2DetCATS::MakeScintillators()
+//
+// Cosmic Veto Shield
+//
+void A2DetCATS::MakeShield()
 {
 
+	// Define Shield colour
 	G4VisAttributes* col4 = new G4VisAttributes( G4Colour( 1.0, 1.0, 0.0));
 	col4->SetVisibility( true);
 
-	for ( G4int i = 0; i < nShi-1; i++)
+	G4Tubs *fScint = new G4Tubs( "Scint", 25.15*cm, 35.15*cm, w_scint, 36.*deg, 72*deg);
+	G4LogicalVolume* fScintLogic = new G4LogicalVolume( fScint, fNistManager->FindOrBuildMaterial( "G4_PLASTIC_SC_VINYLTOLUENE"), "ScintLogic");
+	fScintLogic->SetVisAttributes( col4);
+
+	// Make the 5 segments around the NaI
+	for ( G4int ii = 0; ii < nShi; ii++)
 	{
 
-		G4Tubs *fScint = new G4Tubs( "Scint", 25.15*cm, 35.15*cm, w, (72.*i)*deg, 72*deg);
-		fScintLogic = new G4LogicalVolume( fScint, fNistManager->FindOrBuildMaterial( "G4_PLASTIC_SC_VINYLTOLUENE"), "ScintLogic");
-		fScintLogic->SetVisAttributes( col4);
+		G4RotationMatrix* rotate = new G4RotationMatrix();
+		G4double rot_ang;
 
-		fScintPhysi = new G4PVPlacement( 0, G4ThreeVector( 0, 0, 0), fScintLogic,
-				TString::Format( "ScintPlacement%d", i+1).Data(), fMyLogic, false, i+1);
+		rot_ang = 36.*deg*(1.+2.*ii);
+
+		rotate->rotateZ( rot_ang);
+
+		G4VPhysicalVolume* fScintPhysi = new G4PVPlacement( rotate, G4ThreeVector( 0, 0, 0), fScintLogic,
+				TString::Format( "ScintPlacement%d", ii+1).Data(), fMyLogic, false, ii+1);
 
 		if ( fIsCheckOverlap) A2Utils::CheckOverlapAndAbort( fScintPhysi, "A2DetCATS::Construct()");
 
 	}
-
-// this one is located on the back of CATS
-	G4Tubs *fScint = new G4Tubs( "Scint", 0*cm, 35.0*cm, 4.7*cm, 0.*deg, 360*deg);
-	fScintLogic = new G4LogicalVolume( fScint, fNistManager->FindOrBuildMaterial( "G4_PLASTIC_SC_VINYLTOLUENE"), "ScintLogic");
-	fScintLogic->SetVisAttributes( col4);
-	fScintPhysi = new G4PVPlacement( 0, G4ThreeVector(0,0,55.45*cm), fScintLogic, "ScintPlacement6", fMyLogic, false, nShi);
-
-	if ( fIsCheckOverlap) A2Utils::CheckOverlapAndAbort( fScintPhysi, "A2DetCATS::Construct()");
 
 // Make Sensitive
 	G4SDManager* SDman = G4SDManager::GetSDMpointer();
@@ -227,18 +248,55 @@ void A2DetCATS::MakeScintillators()
 	}
 }
 
+//
+// Rear Cosmic Shield
+//
+void A2DetCATS::MakeRearShield()
+{
+
+	// Define Shield colour
+	G4VisAttributes* col4 = new G4VisAttributes( G4Colour( 1.0, 1.0, 0.0));
+	col4->SetVisibility( true);
+
+// Make Rear Shield 
+	G4Tubs *fScintBack = new G4Tubs( "ScintBack", 0*cm, 35.0*cm, 4.7*cm, 0.*deg, 360*deg);
+	G4LogicalVolume* fScintBackLogic = new G4LogicalVolume( fScintBack, fNistManager->FindOrBuildMaterial( "G4_PLASTIC_SC_VINYLTOLUENE"), "ScintBackLogic");
+	fScintBackLogic->SetVisAttributes( col4);
+	G4VPhysicalVolume* fScintBackPhysi = new G4PVPlacement( 0, G4ThreeVector(0,0,55.45*cm), fScintBackLogic, "BackScintPlacement", fMyLogic, false, 1);
+
+	if ( fIsCheckOverlap) A2Utils::CheckOverlapAndAbort( fScintBackPhysi, "A2DetCATS::Construct()");
+
+// Make Sensitive
+	G4SDManager* SDman = G4SDManager::GetSDMpointer();
+	if ( fIsInteractive == 1)
+	{ 
+		if ( !fCATSRShieldVisSD) fCATSRShieldVisSD = new A2VisSD( "CATSRShieldVisSD", 1);
+		SDman->AddNewDetector( fCATSRShieldVisSD );
+		fScintBackLogic->SetSensitiveDetector( fCATSRShieldVisSD);
+		fregionCATS->AddRootLogicalVolume( fScintBackLogic);
+	}
+	else
+	{
+		if ( !fCATSRShieldSD) fCATSRShieldSD = new A2SD( "CATSRShieldSD", 1);
+		SDman->AddNewDetector( fCATSRShieldSD );
+		fScintBackLogic->SetSensitiveDetector( fCATSRShieldSD);
+		fregionCATS->AddRootLogicalVolume( fScintBackLogic);
+	}
+}
+
+//
+// Front Veto covering entrance
+//
 void A2DetCATS::MakeVeto()
 {
 
-	G4Box* fVeto = new G4Box( "Veto", 7*cm, 7*cm, 2.5*mm);
-	fVetoLogic = new G4LogicalVolume(fVeto, fNistManager->FindOrBuildMaterial( "G4_PLASTIC_SC_VINYLTOLUENE"), "VetoLogic");
-
 	G4VisAttributes* col7 = new G4VisAttributes( G4Colour(0,0.3,1.0));
-
 	col7->SetVisibility( true);
 
+	G4Box* fVeto = new G4Box( "Veto", 7*cm, 7*cm, 2.5*mm);
+	G4LogicalVolume* fVetoLogic = new G4LogicalVolume(fVeto, fNistManager->FindOrBuildMaterial( "G4_PLASTIC_SC_VINYLTOLUENE"), "VetoLogic");
 	fVetoLogic->SetVisAttributes( col7);
-	fVetoPhysi = new G4PVPlacement( 0, G4ThreeVector(0,5*mm,-805.5*mm), fVetoLogic, "VetoPlacement", fMyLogic, false, 1);
+	G4VPhysicalVolume* fVetoPhysi = new G4PVPlacement( 0, G4ThreeVector(0,5*mm,-805.5*mm), fVetoLogic, "VetoPlacement", fMyLogic, false, 1);
 
 	if ( fIsCheckOverlap) A2Utils::CheckOverlapAndAbort( fVetoPhysi, "A2DetCATS::Construct()");
 
@@ -247,7 +305,7 @@ void A2DetCATS::MakeVeto()
 	if ( fIsInteractive==1)
 	{ 
 		if ( !fCATSVetoVisSD) fCATSVetoVisSD = new A2VisSD( "CATSVetoVisSD", 1);
-		SDman->AddNewDetector( fCATSVetoVisSD );
+		SDman->AddNewDetector( fCATSVetoVisSD);
 		fVetoLogic->SetSensitiveDetector( fCATSVetoVisSD);
 		fregionCATS->AddRootLogicalVolume( fVetoLogic);
 	}
@@ -260,22 +318,27 @@ void A2DetCATS::MakeVeto()
 	}
 }
 
-// Function to create lithium carbonate ring around sodium iodide
+//
+// Lithium-Carbonate Ring around NaI
+//
 void A2DetCATS::MakeRing()
 {
 
 	G4VisAttributes* col4 = new G4VisAttributes( G4Colour( 1.0, 0.0, 1.0));
 	col4->SetVisibility( true);
 
-	G4Tubs *fRing = new G4Tubs( "Ring", 24.15*cm, 25.15*cm, z, 0.*deg, 360.*deg);
-	fRingLogic = new G4LogicalVolume( fRing, fNistManager->FindOrBuildMaterial( "G4_LITHIUM_CARBONATE"), "RingLogic");
+	G4Tubs *fRing = new G4Tubs( "Ring", 24.15*cm, 25.15*cm, z_cryst, 0.*deg, 360.*deg);
+	G4LogicalVolume* fRingLogic = new G4LogicalVolume( fRing, fNistManager->FindOrBuildMaterial( "G4_LITHIUM_CARBONATE"), "RingLogic");
 	fRingLogic->SetVisAttributes( col4);
-	fRingPhysi = new G4PVPlacement( 0, G4ThreeVector( 0, 0, 0), fRingLogic, "RingPlacement", fMyLogic, false, 1);
+	G4VPhysicalVolume* fRingPhysi = new G4PVPlacement( 0, G4ThreeVector( 0, 0, 0), fRingLogic, "RingPlacement", fMyLogic, false, 1);
 
 	if ( fIsCheckOverlap) A2Utils::CheckOverlapAndAbort( fRingPhysi, "A2DetCATS::Construct()");
 
 }
 
+//
+// Lead Shielding
+//
 void A2DetCATS::MakeLeadShield()
 {
 
@@ -303,8 +366,8 @@ void A2DetCATS::MakeLeadShield()
 
 //making the inner cone! 
 	G4Cons* fLeadCone = new G4Cons("LeadCone", 138*mm, 260*mm, 187*mm, 260*mm, 73*mm, 0*deg, 360*deg);
-	fLeadConeLogic = new G4LogicalVolume(fLeadCone, fNistManager->FindOrBuildMaterial( "G4_Pb"), "LeadConeLogic");
-	fLeadConePhysi = new G4PVPlacement( 0, G4ThreeVector(0,0,-480.5*mm), fLeadConeLogic, "PLeadCone", fMyLogic, false, 1);
+	G4LogicalVolume* fLeadConeLogic = new G4LogicalVolume(fLeadCone, fNistManager->FindOrBuildMaterial( "G4_Pb"), "LeadConeLogic");
+	G4VPhysicalVolume* fLeadConePhysi = new G4PVPlacement( 0, G4ThreeVector(0,0,-480.5*mm), fLeadConeLogic, "PLeadCone", fMyLogic, false, 1);
 
 	if ( fIsCheckOverlap) A2Utils::CheckOverlapAndAbort( fLeadConePhysi, "A2DetCATS::Construct()");
 
@@ -351,7 +414,7 @@ void A2DetCATS::MakeLeadShield()
 
 	LeadBox->Voxelize();
 
-	fLeadBoxLogic = new G4LogicalVolume(LeadBox, fNistManager->FindOrBuildMaterial( "G4_Pb"), "LeadLogic");
+	G4LogicalVolume* fLeadBoxLogic = new G4LogicalVolume(LeadBox, fNistManager->FindOrBuildMaterial( "G4_Pb"), "LeadLogic");
 
 	G4VisAttributes* col6 = new G4VisAttributes( G4Colour(0.3,1.0,0.0));
 	col6->SetVisibility(true);
@@ -359,7 +422,7 @@ void A2DetCATS::MakeLeadShield()
 
 	fLeadBoxLogic->SetVisAttributes(col6);
 
-	fLeadBoxPhysi = new G4PVPlacement( 0, G4ThreeVector( 0, 0, 0), fLeadBoxLogic, "PLeadBox", fMyLogic, false, 1);
+	G4VPhysicalVolume* fLeadBoxPhysi = new G4PVPlacement( 0, G4ThreeVector( 0, 0, 0), fLeadBoxLogic, "PLeadBox", fMyLogic, false, 1);
 
 	if ( fIsCheckOverlap) A2Utils::CheckOverlapAndAbort( fLeadBoxPhysi, "A2DetCATS::Construct()");
 

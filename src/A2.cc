@@ -13,16 +13,10 @@
 #endif
 
 #include "Randomize.hh"
-#ifdef G4UI_USE_QT
 #include "G4UIQt.hh"
 #include "G4Qt.hh"
-#endif
-#ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
-#endif
-//#ifdef G4UI_USE
 #include "G4UIExecutive.hh"
-//#endif
 
 #include "A2DetectorConstruction.hh"
 #include "A2PhysicsList.hh"

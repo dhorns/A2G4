@@ -16,7 +16,7 @@
 /control/verbose 2
 /control/saveHistory
 /run/verbose 2
-/vis/verbose 0
+#/vis/verbose 0
 #
 # create empty scene
 #

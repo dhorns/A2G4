@@ -1,4 +1,3 @@
-
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
 #include "G4UIterminal.hh"
@@ -166,12 +165,12 @@ int main(int argc,char** argv) {
     else uiexecutive = new G4UIExecutive(argc,argv);
   }
   
-#ifdef G4VIS_USE
+//#ifdef G4VIS_USE
   // Visualization manager
   G4VisManager* visManager = new G4VisExecutive;
   visManager->Initialize();
   if (!session) visManager->SetVerboseLevel("quiet");
-#endif
+//#endif
   // Set user action classes
   A2PrimaryGeneratorAction* pga=new A2PrimaryGeneratorAction();
   pga->SetDetCon(detector);

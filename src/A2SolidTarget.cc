@@ -14,28 +14,33 @@ A2SolidTarget::A2SolidTarget()
 {
   fRadius=2.1*cm;
 }
+
 A2SolidTarget::~A2SolidTarget()
 {
  
 }
 
-G4VPhysicalVolume* A2SolidTarget::Construct(G4LogicalVolume *MotherLogic, G4double Z0){
+G4VPhysicalVolume* A2SolidTarget::Construct(G4LogicalVolume *MotherLogic, G4double Z0)
+{
+
   fMotherLogic=MotherLogic;
-  //Parameters taken from ugeom_solid_target.F
+
+// Parameters taken from ugeom_solid_target.F
   G4double zm = 20.*cm;   //      ! z for mother volume 
   G4double rm = 3.94*cm; //        ! radius of mother volume
   G4double zpos = Z0 -(zm-14.5*cm); //        ! zpos of mother volume relative to centre of ball
 
   if(!fMaterial){G4cerr<<"A2SolidTarget::Construct() Solid target material not defined. Add in DetectorSetup.mac."<<G4endl;exit(1);}
-  //c target lenght:
+
+// C target length:
   G4double trgt_length;
   if(fMaterial==G4NistManager::Instance()->FindOrBuildMaterial("G4_Li"))trgt_length=5.*cm; 
-  // else if(fMaterial==G4NistManager::Instance()->FindOrBuildMaterial("G4_GRAPHITE"))trgt_length=1.5*cm; 
   else if(fMaterial==G4NistManager::Instance()->FindOrBuildMaterial("G4_Ca"))trgt_length=1.*cm; 
   else if(fMaterial==G4NistManager::Instance()->FindOrBuildMaterial("G4_GRAPHITE"))trgt_length=1.5*cm; 
   else if(fMaterial==G4NistManager::Instance()->FindOrBuildMaterial("G4_Pb"))trgt_length=0.05*cm; 
   else {G4cerr<<"A2SolidTarget::Construct() Solid target length not defined!!"<<G4endl;exit(1);}
   fLength=trgt_length;
+
   ///////////////////////////
   //Construct the volumes
   /////////////////////////
@@ -50,6 +55,7 @@ G4VPhysicalVolume* A2SolidTarget::Construct(G4LogicalVolume *MotherLogic, G4doub
   fMyLogic=new G4LogicalVolume(MyShape,G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR"),"TRGT");
   fMyPhysi=new G4PVPlacement(0,G4ThreeVector(0,0,zpos),fMyLogic,"TRGT",fMotherLogic,false,1);
   fMyLogic->SetVisAttributes (G4VisAttributes::GetInvisible);
+
   //////////////////////
   //CFK tube + window
   /////////////////////
@@ -105,9 +111,10 @@ G4VPhysicalVolume* A2SolidTarget::Construct(G4LogicalVolume *MotherLogic, G4doub
   G4LogicalVolume* WINDLogic=new G4LogicalVolume(WIND,G4NistManager::Instance()->FindOrBuildMaterial("G4_KAPTON"),"WIND");
   new G4PVPlacement(0,G4ThreeVector(0,0,zm-0.2*cm-0.006*cm),WINDLogic,"WIND",fMyLogic,false,4);
   WINDLogic->SetVisAttributes (G4VisAttributes::GetInvisible);
-  /////////////////////////////////////
-    //Target cell
-    ///////////////////////////////////////
+
+	/////////////////////////////////////
+	//Target cell
+	///////////////////////////////////////
 
   //  G4Tubs* CELL=new G4Tubs("CELL",0,1.5*cm,trgt_length/2,0*deg,360*deg);
   G4Tubs* CELL=new G4Tubs("CELL",0,fRadius,trgt_length/2,0*deg,360*deg);//ctarbert measurement
@@ -121,14 +128,13 @@ G4VPhysicalVolume* A2SolidTarget::Construct(G4LogicalVolume *MotherLogic, G4doub
   G4cout<<"Target centre "<<(Z0 + zm-0.75*cm-13*cm+zpos-0.25*cm-0.5*cm)/cm<<"cm"<<G4endl;
   fCenter.set(0,0,Z0 + zm-0.75*cm-13*cm+zpos-0.25*cm-0.5*cm);//position of cell in world volume
 
-  /////////////////////////////////////
-    //Target holder
-    ///////////////////////////////////
+	/////////////////////////////////////
+	//Target holder
+	///////////////////////////////////
   G4Tubs* HOLD=new G4Tubs("HOLD",2.1*cm,3.5*cm,0.5*cm,0*deg,360*deg);
   G4LogicalVolume* HOLDLogic=new G4LogicalVolume(HOLD,G4NistManager::Instance()->FindOrBuildMaterial("A2_ROHACELL"),"HOLD");
   new G4PVPlacement(0,G4ThreeVector(0,0,zm-0.75*cm-13*cm),HOLDLogic,"HOLD",VAC1Logic,false,2);
 
   return NULL;
-
 
 }

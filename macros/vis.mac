@@ -2,8 +2,11 @@
 # of the B4 example when running in interactive mode
 #
 
+/run/initialize
+
 # Open a viewer
-/vis/open
+#/vis/open
+/vis/open OGL
 # This opens the default viewer - see examples/basic/B1/vis.mac for a
 # more comprehensive overview of options. Also the documentation.
 #
@@ -16,10 +19,12 @@
 /vis/drawVolume
 #
 # Specify view angle:
-/vis/viewer/set/viewpointThetaPhi 90. 180.
+/vis/viewer/set/viewpointThetaPhi 90. 90.
+#/vis/viewer/set/viewpointThetaPhi 90. 180.
 #
 # Specify zoom value:
-#/vis/viewer/zoom 2.
+#/vis/viewer/zoom 1.
+/vis/viewer/zoom 10.
 #
 # Specify style (surface, wireframe, auxiliary edges,...)
 #/vis/viewer/set/style wireframe
@@ -27,7 +32,7 @@
 #/vis/viewer/set/lineSegmentsPerCircle 100
 #
 # Draw coordinate axes:
-#/vis/scene/add/axes 0 0 0 1 m
+/vis/scene/add/axes 0 0 0 300 cm
 #
 # Draw smooth trajectories at end of event, showing trajectory points
 # as markers 2 pixels wide:

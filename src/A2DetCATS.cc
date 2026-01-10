@@ -26,8 +26,8 @@ using namespace CLHEP;
 const G4double z_cryst = 31.75*cm; // For crystal
 const G4double w_scint = 40.75*cm; // For scintillators
 
-const G4int nAnn = 6;
-const G4int nShi = 5;
+const G4int nAnn = 6;	// Number of Annulus segments
+const G4int nShi = 5;	// Number of Cosmic Shield segments
 
 // Constructor
 A2DetCATS::A2DetCATS()
@@ -77,15 +77,17 @@ G4VPhysicalVolume* A2DetCATS::Construct( G4LogicalVolume* motherLogic)
 	fMotherLogic = motherLogic;
 
 	// Construct the Air Box
-	G4Box* airbox = new G4Box( "litterbox", 300*cm, 300*cm, 300*cm);
+	G4Box* airbox = new G4Box( "litterbox", 70*cm, 70*cm, 100*cm);
 	fMyLogic = new G4LogicalVolume( airbox, fNistManager->FindOrBuildMaterial( "G4_AIR"), "litterbox");
 	fMyLogic->SetVisAttributes( G4VisAttributes::GetInvisible); 
 
-//	G4RotationMatrix* rot = new G4RotationMatrix();
-//	rot->rotateY( 40.*deg);
+	G4RotationMatrix* rot = new G4RotationMatrix();
+	rot->rotateY( 40.*deg);
+
 //	fMyPhysi = new G4PVPlacement( rot, G4ThreeVector( -96*cm, 0, 315*cm), fMyLogic, "A2DetCATS", fMotherLogic, false, 0);
 
-	fMyPhysi = new G4PVPlacement( 0, G4ThreeVector( 0, 0, 150*cm), fMyLogic, "litterbox", fMotherLogic, false, 0);  
+//	fMyPhysi = new G4PVPlacement( rot, G4ThreeVector( 0*cm, 0*cm, 150*cm), fMyLogic, "litterbox", fMotherLogic, false, 0);  
+	fMyPhysi = new G4PVPlacement( rot, G4ThreeVector( -96*cm, 0*cm, 115*cm), fMyLogic, "litterbox", fMotherLogic, false, 0);  
 
 	if ( fIsCheckOverlap) A2Utils::CheckOverlapAndAbort( fMyPhysi, "A2DetCATS::Construct()");
 

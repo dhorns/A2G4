@@ -96,7 +96,14 @@ G4VPhysicalVolume* A2SolidTargetGeneric::Construct(G4LogicalVolume* motherLogic,
         v = new G4PVPlacement(0, G4ThreeVector(0, 0, z0 - airTube_z0), cell_log, "CELL", fMyLogic, false, 0);
     else
         v = new G4PVPlacement(0, G4ThreeVector(0, 0, 0), cell_log, "CELL", fMyLogic, false, 0);
-    cell_log->SetVisAttributes(G4Colour(1, 0, 0));
+
+	 G4VisAttributes* col1 = new G4VisAttributes( G4Colour( 0.5, 0.5, 0.0));
+	 col1->SetVisibility( true);
+	 col1->SetForceSolid( true);
+    cell_log->SetVisAttributes( col1);
+
+//    cell_log->SetVisAttributes( G4Colour(1.0,0.0,0.0));
+
     A2Utils::CheckOverlapAndAbort(v, "A2SolidTargetGeneric::Construct()");
 
     //

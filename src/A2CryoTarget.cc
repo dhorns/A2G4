@@ -165,7 +165,7 @@ G4VPhysicalVolume* A2CryoTarget::Construct1(G4LogicalVolume *MotherLogic, G4doub
     new G4PVPlacement(0,G4ThreeVector(0,0,l_lD2D/2. - l_trgt/2.),LD2DLogic,"LD2D",fMyLogic,false,11);
 
     
-  G4VisAttributes* LD2VisAtt= new G4VisAttributes(G4Colour(1.0,.0,0.0));
+  G4VisAttributes* LD2VisAtt= new G4VisAttributes(G4Colour(1.0,0.0,0.0));
   LD2VisAtt->SetForceSolid(true);
   LD2ALogic->SetVisAttributes(LD2VisAtt);
   LD2BLogic->SetVisAttributes(LD2VisAtt);

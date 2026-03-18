@@ -1,5 +1,5 @@
 ##Use the crystal ball?
-/A2/det/useCB 0
+/A2/det/useCB 1
 #if the 3rd number in the next line is negative use old geometry,
 # if positive use new Prakhov geometry
 #the first two numbers give the upper and lower air gap between hemispheres
@@ -19,18 +19,18 @@
 #/A2/det/setTAPSZ 175 cm
 #/A2/det/setTAPSN 510
 
-##Use CATS.
-/A2/det/useCATS 1
+##Use CATS
+/A2/det/useCATS 0
 
 ##Use the PID
-/A2/det/usePID 0
+/A2/det/usePID 1
 /A2/det/setPIDZ 0. cm
 #/A2/det/setPIDRotation 10 deg
 
 ##Use MWPC
 #set to 1 to not create the anode wires, 2 to create the anode wires
 #add 0 to disable the readout (e.g., 10, 20)
-/A2/det/useMWPC 0
+/A2/det/useMWPC 2
 
 ##Use Cherenkov?
 /A2/det/useCherenkov 0
@@ -43,13 +43,15 @@
 /A2/det/usePizza 0
 /A2/det/setPizzaZ 162 cm
 
-##Set the target
-###Cryo targets : Cryo (larger cell), Cryo2 (narrower cell), CryoHe3 (He3/He4 target)
-###Materials: G4_lH2, A2_lD2, A2_lHe3, A2_lHe4
-#/A2/det/useTarget Cryo
+## Set the target
+### Cryo targets : Cryo (larger cell), Cryo2 (narrower cell), CryoHe3 (He3/He4 target)
+### Materials: G4_lH2, A2_lD2, A2_lHe3, A2_lHe4
+/A2/det/useTarget Cryo
 #/A2/det/useTarget Cryo2
 #/A2/det/useTarget CryoHe3
-#/A2/det/targetMaterial G4_lH2
+/A2/det/targetMaterial G4_lH2
+#/A2/det/targetMaterial G4_lHe4
+/A2/det/setTargetLength 5. cm
 #/A2/det/setTargetLength 10. cm
 #/A2/det/setTargetZ 0. cm
 ####Solid targets
@@ -59,15 +61,17 @@
 #/A2/det/targetMaterial G4_Pb
 #/A2/det/targetMaterial G4_Li
 #/A2/det/targetMaterial G4_Ca
+#/A2/det/targetMaterial G4_GRAPHITE
+#/A2/det/setTargetLength 2. cm
 #
-# For CATS
+##### For CATS
 #
-/A2/det/useTarget Solid_Generic
-/A2/det/targetMaterial G4_GRAPHITE
-/A2/det/setTargetLength 5. cm
-/A2/det/setTargetZ 0. cm
+#/A2/det/useTarget Solid_Generic
+#/A2/det/targetMaterial G4_GRAPHITE
+#/A2/det/setTargetLength 2. cm
+#/A2/det/setTargetZ 0. cm
 #
-#####Polarised target
+##### Polarised target
 #/A2/det/useTarget Polarized
 #/A2/det/targetMaterial A2_HeButanol
 #/A2/det/targetMaterial A2_HeDButanol

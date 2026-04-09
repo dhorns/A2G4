@@ -12,6 +12,7 @@
 #include "G4EmSaturation.hh"
 #include "G4LossTableManager.hh"
 #include "CLHEP/Units/SystemOfUnits.h"
+#include "G4String.hh"
 
 #include "stdio.h"
 
@@ -68,10 +69,11 @@ G4bool A2SD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
   //TAPS volume  is contained in COVR which is the multiple placed volume!
   //For PbWO4 they have an additional Copy Number which should be added on to the COVR volume
   //if(volume->GetName().contains("TAPS")||volume->GetName().contains("PbWO"))id=mothervolume->GetCopyNo()+volume->GetCopyNo();
-  if(mothervolume->GetName().contains("COVR"))id=mothervolume->GetCopyNo()+volume->GetCopyNo();
+//  if(mothervolume->GetName().contains("COVR"))id=mothervolume->GetCopyNo()+volume->GetCopyNo();
+  if(G4StrUtil::contains(mothervolume->GetName(),"COVR"))id=mothervolume->GetCopyNo()+volume->GetCopyNo();
   else id = volume->GetCopyNo();
   //seperate ADC gates for TAPS
-  if((mothervolume->GetName().contains("COVR"))&&(aStep->GetPreStepPoint()->GetGlobalTime()>2000*ns))return false;
+  if(G4StrUtil::contains(mothervolume->GetName(),"COVR")&&(aStep->GetPreStepPoint()->GetGlobalTime()>2000*ns))return false;
   else if (aStep->GetPreStepPoint()->GetGlobalTime()>600*ns)return false; 
 
   // energy correction for non-linearity in plastic scintillators
@@ -109,12 +111,13 @@ G4bool A2SD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     (*fCollection)[fhitID[id]]->AddPartEnergy(track_info->GetPartID(), edep);
     // set more realistic hit times
     G4double time = aStep->GetPreStepPoint()->GetGlobalTime();
-    if (volume->GetName().contains("TAPS"))
+//    if (volume->GetName().contains("TAPS"))
+    if (G4StrUtil::contains(volume->GetName(),"TAPS"))
     {
       if (edep/MeV > 4. && time < (*fCollection)[fhitID[id]]->GetTime())
         (*fCollection)[fhitID[id]]->SetTime(time);
     }
-    else if (volume->GetName().contains("CRYSTAL"))
+    else if (G4StrUtil::contains(volume->GetName(),"CRYSTAL"))
     {
       if (edep/MeV > 2. && time < (*fCollection)[fhitID[id]]->GetTime())
         (*fCollection)[fhitID[id]]->SetTime(time);

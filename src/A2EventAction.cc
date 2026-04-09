@@ -17,6 +17,7 @@
 #include "G4UImanager.hh"
 #include "CLHEP/Units/SystemOfUnits.h"
 #include "G4Version.hh"
+#include "G4String.hh"
 
 #include "Randomize.hh"
 #include "TString.h"
@@ -131,7 +132,8 @@ void A2EventAction::EndOfEventAction(const G4Event* evt)
       //if(!hc)continue; //no hits in that detector
       G4int hc_nhits=hc->entries();
       //      if(hc->GetName()=="A2SDHitsVisCBSD"){
-      if(hc->GetName().contains("Vis")){
+//      if(hc->GetName().contains("Vis")){
+		if(G4StrUtil::contains(hc->GetName(),"Vis")) {
 	//	G4cout<<hc_nhits <<" hits"<<G4endl;
 	for(G4int ii=0;ii<hc_nhits;ii++){
 	  A2VisHit* hit=static_cast<A2VisHit*>(hc->GetHit(ii));
@@ -381,7 +383,8 @@ void A2EventAction::ReadDetectorSetup(const char* detSetup)
   file.open(detSetup);
   if (file.is_open())
   {
-    while (line.readLine(file))
+//    while (line.readLine(file))
+    while (std::getline(file,line))
     {
       if (line[0] == '#') continue;
       fDetSetup += "                            ";

@@ -2,6 +2,8 @@
 #include "A2FileGenerator.hh"
 #include "G4RunManager.hh"
 #include "CLHEP/Units/SystemOfUnits.h"
+#include "G4String.hh"
+//#include "G4StrUtil.hh"
 
 using namespace CLHEP;
 
@@ -265,7 +267,8 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl)
 		}
 
 		// MWPC
-		if(hc->GetName().contains("A2MWPCSD"))
+//		if(hc->GetName().contains("A2MWPCSD"))
+		if(G4StrUtil::contains(hc->GetName(),"A2MWPCSD"))
 		{
 	      // fnmwpc=hc_nhits;
 			for(Int_t ii=0;ii<hc_nhits;ii++)

@@ -16,9 +16,11 @@
 /A2/generator/Track 3
 /A2/generator/Track 4
 #Open the file and set up the ntuple for reading
-/A2/generator/InputFile evgen/5cm/pi0_he4_300_in.root
+#/A2/generator/InputFile evgen/5cm/pi0_he4_300_in.root
+/A2/generator/InputFile evgen/5cm/pi0_he4_210_in.root
 #####Output
 #Open the output file for writing
-/A2/event/setOutputFile out/pi0_he4_300_out.root
+#/A2/event/setOutputFile out/pi0_he4_300_out.root
+/A2/event/setOutputFile out/pi0_he4_210_out.root
 #
 /A2/event/storePrimaries false

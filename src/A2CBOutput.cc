@@ -312,6 +312,9 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl)
 			}
 		}
 
+//
+// CATS Section
+//
 		// CATS Core
 		if ( hc->GetName() == "A2SDHitsCATSCoreSD" || hc->GetName() == "A2SDHitsCATSCoreVisSD")
 		{
@@ -322,10 +325,6 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl)
 				feCATSCore[ii]=hit->GetEdep()/GeV;
 				ftCATSCore[ii]=hit->GetTime()/ns;
 				fiCATSCore[ii]=hit->GetID();
-//				G4cout << " fnCATSCore = " << fnCATSCore;
-//				G4cout << " ii = " << ii;
-//				G4cout << " hit = " << hit->GetID();
-//				G4cout << G4endl;
 			}
 		}
 
@@ -339,10 +338,6 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl)
 				feCATSAnn[ii]=hit->GetEdep()/GeV;
 				ftCATSAnn[ii]=hit->GetTime()/ns;
 				fiCATSAnn[ii]=hit->GetID();
-//				G4cout << " fnCATSAnn = " << fnCATSAnn;
-//				G4cout << " ii = " << ii;
-//				G4cout << " hit = " << hit->GetID();
-//				G4cout << G4endl;
 			}
 		}
 
@@ -356,10 +351,6 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl)
 				feCATSShield[ii]=hit->GetEdep()/GeV;
 				ftCATSShield[ii]=hit->GetTime()/ns;
 				fiCATSShield[ii]=hit->GetID();
-//				G4cout << " fnCATSShield = " << fnCATSShield;
-//				G4cout << " ii = " << ii;
-//				G4cout << " hit = " << hit->GetID();
-//				G4cout << G4endl;
 			}
 		}
 
@@ -373,10 +364,6 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl)
 				feCATSRShield[ii]=hit->GetEdep()/GeV;
 				ftCATSRShield[ii]=hit->GetTime()/ns;
 				fiCATSRShield[ii]=hit->GetID();
-//				G4cout << " fnCATSRShield = " << fnCATSRShield;
-//				G4cout << " ii = " << ii;
-//				G4cout << " hit = " << hit->GetID();
-//				G4cout << G4endl;
 			}
 		}
 
@@ -390,10 +377,6 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl)
 				feCATSVeto[ii]=hit->GetEdep()/GeV;
 				ftCATSVeto[ii]=hit->GetTime()/ns;
 				fiCATSVeto[ii]=hit->GetID();
-//				G4cout << " fnCATSVeto = " << fnCATSVeto;
-//				G4cout << " ii = " << ii;
-//				G4cout << " hit = " << hit->GetID();
-//				G4cout << G4endl;
 			}
 		}
 	}

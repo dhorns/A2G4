@@ -49,8 +49,10 @@
 /A2/det/useTarget Cryo
 #/A2/det/useTarget Cryo2
 #/A2/det/useTarget CryoHe3
-/A2/det/targetMaterial G4_lH2
-#/A2/det/targetMaterial G4_lHe4
+#/A2/det/targetMaterial G4_lH2
+#/A2/det/targetMaterial A2_lD2
+#/A2/det/targetMaterial A2_lHe3
+/A2/det/targetMaterial A2_lHe4
 /A2/det/setTargetLength 5. cm
 #/A2/det/setTargetLength 10. cm
 #/A2/det/setTargetZ 0. cm
@@ -63,6 +65,12 @@
 #/A2/det/targetMaterial G4_Ca
 #/A2/det/targetMaterial G4_GRAPHITE
 #/A2/det/setTargetLength 2. cm
+#
+# Lithium Targets
+#/A2/det/useTarget Solid
+#/A2/det/targetMaterial A2_Li6
+#/A2/det/targetMaterial A2_Li7
+#/A2/det/setTargetLength 1. cm
 #
 ##### For CATS
 #
